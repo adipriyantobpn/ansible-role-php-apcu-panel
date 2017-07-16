@@ -1,2 +1,27 @@
 ---
 # tasks file for adipriyanto.php-apcu-panel
+# https://anavarre.net/how-to-monitor-and-tune-apcu/
+# alternatives:
+#   - http://www.techzonemind.com/apc-admin-new-generation-admin-interface-php-apc/
+#     https://github.com/jithinjose2/APC-Admin
+- block:
+  - name: install APCu-Panel packages
+    yum: name={{ item }} update_cache=yes
+    with_items:
+      - apcu-panel
+    notify: restart webserver
+  
+  - name: copy APCu-Panel Apache2 configuration
+    template:
+      src: apcu-panel.conf.j2
+      dest: /etc/httpd/conf.d/apcu-panel.conf
+      backup: yes
+    notify: restart webserver
+  
+  - name: copy APCu-Panel PHP configuration
+    template:
+      src: apcu-panel.php.j2
+      dest: /etc/apcu-panel/conf.php
+      backup: yes
+    notify: restart webserver
+  become: True
